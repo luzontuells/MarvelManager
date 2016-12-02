@@ -5,8 +5,9 @@
     android:orientation="horizontal">
 
     <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:id="@+id/icon_item"
+        android:layout_width="0dp"
+        android:layout_height="60dp"
         android:layout_weight="0.75"
         android:src="@mipmap/ic_launcher" />
 
@@ -18,13 +19,14 @@
 
         <TextView
             android:id="@+id/item_name"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_weight="0.5"
             android:text="Hola" />
 
         <TextView
-            android:layout_width="match_parent"
+            android:id="@+id/item_body"
+            android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_below="@+id/item_name"
             android:layout_weight="0.5"

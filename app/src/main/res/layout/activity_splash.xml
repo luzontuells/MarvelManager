@@ -8,14 +8,14 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="luzontuells.marvelmanager.activities.SplashActivity">
+    tools:context="luzontuells.marvelmanager.activities.SplashScreenActivity">
 
-    <ImageView
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:contentDescription="@string/app_name"
-        android:scaleType="fitXY"
-        android:src="@mipmap/ic_launcher" />
+        android:gravity="center"
+        android:text="@string/my_name" />
 
 </RelativeLayout>
 

@@ -1,4 +1,11 @@
 <resources>
     <string name="app_name">MarvelManager</string>
     <string name="first_activity_title_text">Busca tu súper-héroe</string>
+    <string name="second_activity_links">Links</string>
+    <string name="second_activity_recursos">Recursos</string>
+    <string name="second_activity_button_detalle">Detalle</string>
+    <string name="second_activity_button_wiki">Wiki</string>
+    <string name="second_activity_button_comics">Comics</string>
+    <string name="my_name">Joaquín Luzón Tuells</string>
+
 </resources>
