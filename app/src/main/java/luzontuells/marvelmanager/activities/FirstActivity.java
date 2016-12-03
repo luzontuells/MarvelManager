@@ -7,6 +7,8 @@ import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -19,6 +21,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -44,17 +48,22 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
 
 
     private static final String TAG_FIRST_ACTIVITY = FirstActivity.class.getSimpleName();
-    private static final String JSON_URL = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a";
+    private static final String JSON_URL = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
 
-    private ArrayList<String> mCharId = new ArrayList<String>();
+    private ArrayList<String> mCharId = new ArrayList<>();
+    private ArrayList<String> mNames = new ArrayList<>();
+    private ArrayList<String> array_sort = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
 
-        final ListView mListView = (ListView) this.findViewById(R.id.list_view_first);
-        mListView.setOnItemClickListener(this);
+        final ListView listView = (ListView) this.findViewById(R.id.list_view_first);
+        listView.setOnItemClickListener(this);
+
+//        final RecyclerView mRecyclerView = (RecyclerView) this.findViewById(R.id.list_recycler_view);
+
 
         final EditText searchEditText = (EditText) findViewById(R.id.name_edit_text);
         searchEditText.addTextChangedListener(new TextWatcher() {
@@ -66,18 +75,47 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+                //TODO: ARREGLAR!
+                /*
+                int textlength = searchEditText.getText().length();
+                array_sort.clear();
+                for (String element: mNames)
+                {
+                    if (textlength <= element.length())
+                    {
+                        if (searchEditText.getText().toString().equalsIgnoreCase(
+                                (String)
+                                        element.subSequence(0,
+                                                textlength)))
+                        {
+                            array_sort.add(element);
+                        }
+                    }
+                }
+//                lv.setAdapter(new ArrayAdapter<String>
+//                        (MainActivity.this,
+//                                android.R.layout.simple_list_item_1, array_sort));
+                ArrayList<Item> mListArray = new ArrayList<>();
+                mListArray.add(new Item(bmp,
+                        nameString,
+                        fields.getString("description"),
+                        idString));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+                mRecyclerView.setAdapter(new MyListAdapterRecycler(this,array_sort));
+                */
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.length() == 0) {
                     //TODO: Busqueda
+
                 }
             }
         });
 
         JSONObject json;
-        Bitmap bmp;
+//        Bitmap bmp;
         try {
             json = new JSONObtainThread().execute(JSON_URL).get();
             if (json == null)
@@ -90,28 +128,28 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
             for (int i = 0; i < results.length(); i++) {
                 JSONObject fields = results.getJSONObject(i);
 
-                bmp = new ImageObtainThread().execute(fields.getJSONObject("thumbnail").getString("path")
-                        + "." + fields.getJSONObject("thumbnail").getString("extension")).get();
+//                bmp = new ImageObtainThread().execute(fields.getJSONObject("thumbnail").getString("path")
+//                        + "." + fields.getJSONObject("thumbnail").getString("extension")).get();
 
+                String imageString = fields.getJSONObject("thumbnail").getString("path")+ "." + fields.getJSONObject("thumbnail").getString("extension");
 
-//                if (bmp == null){
-//                    Log.e(FirstActivity.TAG_FIRST_ACTIVITY, "No images loaded");
-//                }
-
+                String nameString = fields.getString("name");
+                this.mNames.add(nameString);
 
                 String idString = fields.getString("id");
-
                 this.mCharId.add(idString);
 
 
-                mListArray.add(new Item(bmp,
-                        fields.getString("name"),
+
+                mListArray.add(new Item(imageString,
+                        nameString,
                         fields.getString("description"),
                         idString));
 
             }
-            mListView.setAdapter(new MyListAdapter(this, 0, mListArray));
-
+            listView.setAdapter(new MyListAdapter(this, 0, mListArray));
+//            mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+//            mRecyclerView.setAdapter(new MyListAdapterRecycler(this,mListArray));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -125,6 +163,7 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+        //TODO: Arreglar lo del Click
         Intent mIntent = new Intent(this, SecondActivity.class);
         Bundle bundle = new Bundle();
         Log.e(FirstActivity.TAG_FIRST_ACTIVITY, "Position " + Integer.toString(position));
@@ -133,6 +172,15 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
         this.startActivity(mIntent);
         finish();
     }
+
+//    @Override
+//    public void onClick(View view) {
+//
+//    }
+
+
+
+
 
 
     private class MyListAdapter extends ArrayAdapter<Item> {
@@ -168,14 +216,18 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
                 mViewHolder.title_TxtView = (TextView) convertView.findViewById(R.id.item_name);
                 mViewHolder.body_TxtView = (TextView) convertView.findViewById(R.id.item_body);
                 convertView.setTag(mViewHolder);
+
             } else
                 mViewHolder = (ViewHolder) convertView.getTag();
 
             // Once we are sure the 'ViewHolder' object is attach to 'convertView', we can populate the view
 //            mViewHolder.icon_ImgView.setImageResource(this.mContext.getResources().getIdentifier(this.itemList.get(position).getmImage(), "drawable", this.mContext.getPackageName()));
-            mViewHolder.icon_ImgView.setImageBitmap(this.itemList.get(position).getmImage());
+//            mViewHolder.icon_ImgView.setImageBitmap(this.itemList.get(position).getmImage());
             mViewHolder.title_TxtView.setText(this.itemList.get(position).getmName());
             mViewHolder.body_TxtView.setText(this.itemList.get(position).getmBody());
+            Picasso.with(mContext)
+                    .load(this.itemList.get(position).getmImage())
+                    .into(mViewHolder.icon_ImgView);
 
             // To check that views are loaded only when they have to be shown
             //Log.i(MainActivity.TAG_FIRST_ACTIVITY, String.valueOf(this.mContext.getResources().getIdentifier(this.itemList.get(position).getmImage(), "drawable", this.mContext.getPackageName())));
@@ -183,6 +235,90 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
             return convertView;
         }
     }
+
+
+
+
+//
+//
+//    // This adapter uses the 'RecyclerView.Adapter' for the 'RecyclerView' (which is an optimized 'ListView')
+//    private class MyListAdapterRecycler extends RecyclerView.Adapter<MyListAdapterRecycler.ViewHolder>
+//    {
+//        // Creating a 'ViewHolder' to speed up the performance
+//        public class ViewHolder extends RecyclerView.ViewHolder
+//        {
+//            public ImageView icon_ImgView;
+//            public TextView title_TxtView;
+//            public TextView body_TxtView;
+//
+//            public ViewHolder(View itemView)
+//            {
+//                super(itemView);
+//
+//                this.icon_ImgView = (ImageView) itemView.findViewById(R.id.icon_item);
+//                this.title_TxtView = (TextView) itemView.findViewById(R.id.item_name);
+//                this.body_TxtView = (TextView) itemView.findViewById(R.id.item_body);
+//            }
+//        }
+//
+//        Context mContext;
+//        ArrayList<Item> itemList;
+//
+//        // Provide a suitable constructor (depends on the kind of dataset)
+//        public MyListAdapterRecycler(Context context, ArrayList<Item> objects)
+//        {
+//            this.mContext = context;
+//            this.itemList = objects;
+//        }
+//
+//        // Create new views (invoked by the layout manager)
+//        @Override
+//        public ViewHolder onCreateViewHolder(ViewGroup parent, final int viewType)
+//        {
+//            // create a new view
+//            View viewRow = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+//            viewRow.setOnClickListener(new View.OnClickListener() {
+//                @Override
+//                public void onClick(View v) {
+//                }
+//            });
+//            // set the view's size, margins, paddings and layout parameters
+//            ViewHolder viewRowHolder = new ViewHolder(viewRow);
+//            return viewRowHolder;
+//        }
+//
+//        // Replace the contents of a view (invoked by the layout manager)
+//        @Override
+//        public void onBindViewHolder(ViewHolder holder, int position)
+//        {
+//            // get element from your dataset at this position
+//            // replace the contents of the view with that element
+////            holder.icon_ImgView.setImageBitmap(this.itemList.get(position).getmImage());
+//            holder.title_TxtView.setText(this.itemList.get(position).getmName());
+//            holder.body_TxtView.setText(this.itemList.get(position).getmBody());
+//
+//            Picasso.with(mContext)
+//                    .load(this.itemList.get(position).getmImage())
+//                    .into(holder.icon_ImgView);
+//        }
+//
+//        // Return the size of your dataset (invoked by the layout manager)
+//        @Override
+//        public int getItemCount()
+//        {
+//            return this.itemList.size();
+//        }
+//    }
+//
+//
+//
+//
+
+
+
+
+
+
 
     private class JSONObtainThread extends AsyncTask<String, Void, JSONObject> {
 
@@ -221,49 +357,6 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
         }
     }
 
-
-    private class ImageObtainThread extends AsyncTask<String, Void, Bitmap> {
-
-        @Override
-        protected Bitmap doInBackground(String[] params) {
-            try {
-                URL myUrl = new URL(params[0]);
-                HttpURLConnection myConnection = (HttpURLConnection) myUrl.openConnection();
-                myConnection.setRequestMethod("GET");
-                myConnection.setDoInput(true);
-
-                myConnection.connect();
-
-                int respCode = myConnection.getResponseCode();
-
-                if (respCode == HttpURLConnection.HTTP_OK) {
-                    InputStream myInStream = myConnection.getInputStream();   // Throws 'IOException'
-
-                    Bitmap myBitmap = BitmapFactory.decodeStream(myInStream);
-
-                    myInStream.close();   // Always close the 'InputStream'
-
-                    if (myBitmap == null)
-                        Log.e(FirstActivity.TAG_FIRST_ACTIVITY, "No images in Thread");
-
-                    return myBitmap;
-                }
-            } catch (MalformedURLException e1) {
-                e1.printStackTrace();
-            } catch (IOException e2) {
-                e2.printStackTrace();
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-//            if (bitmap != null)
-//                mImageView.setImageBitmap(bitmap);
-        }
-    }
 
 
     public static class JSONReader {

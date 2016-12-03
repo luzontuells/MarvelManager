@@ -1,21 +1,23 @@
 package luzontuells.marvelmanager.data;
 
 import android.graphics.Bitmap;
+import android.view.View;
+import android.widget.ImageView;
 
 public class Item {
-    private Bitmap mImage;
+    private String mImage;
     private String mName;
     private String mBody;
     private String mId;
 
-    public Item(Bitmap aImage, String aTitle, String aBody, String aId) {
+    public Item(String aImage, String aTitle, String aBody, String aId) {
         this.mImage = aImage;
         this.mName = aTitle;
         this.mBody = aBody;
         this.mId = aId;
     }
 
-    public Bitmap getmImage() {
+    public String getmImage() {
         return mImage;
     }
 

@@ -35,7 +35,7 @@ import luzontuells.marvelmanager.data.Item;
 public class SecondActivity extends AppCompatActivity {
 
     private static final String TAG_SECOND_ACTIVITY = SecondActivity.class.getSimpleName();
-    private static final String JSON_URL = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a";
+    private static final String JSON_URL = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100";
 
     private String jsonUrl, mNombre, mDescripcion;
     private Bitmap bmp;
@@ -53,7 +53,7 @@ public class SecondActivity extends AppCompatActivity {
             Log.e("HOLA", id);
         }
 
-        this.jsonUrl = "http://gateway.marvel.com:80/v1/public/characters/" + id + "?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a";
+        this.jsonUrl = "http://gateway.marvel.com:80/v1/public/characters/" + id + "?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
 
         JSONObject json;
         try {

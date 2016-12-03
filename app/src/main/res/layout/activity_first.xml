@@ -24,6 +24,11 @@
         android:layout_height="wrap_content"
         android:hint="nombre a buscar" />
 
+    <!--<android.support.v7.widget.RecyclerView-->
+        <!--android:id="@+id/list_recycler_view"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>-->
+
     <ListView
         android:id="@+id/list_view_first"
         android:layout_width="wrap_content"
