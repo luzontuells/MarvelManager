@@ -1,25 +1,31 @@
 package luzontuells.marvelmanager.data;
 
-public class Item {
-    private String mImage;
-    private String mTitle;
-    private String mBody;
+import android.graphics.Bitmap;
 
-    public Item(String imgRef, String aTitle, String aBody) {
-        this.mImage = imgRef;
-        this.mTitle = aTitle;
+public class Item {
+    private Bitmap mImage;
+    private String mName;
+    private String mBody;
+    private String mId;
+
+    public Item(Bitmap aImage, String aTitle, String aBody, String aId) {
+        this.mImage = aImage;
+        this.mName = aTitle;
         this.mBody = aBody;
+        this.mId = aId;
     }
 
-    public String getmImageRef() {
+    public Bitmap getmImage() {
         return mImage;
     }
 
-    public String getmTitle() {
-        return mTitle;
+    public String getmName() {
+        return mName;
     }
 
     public String getmBody() {
         return mBody;
     }
+
+    public String getmId() { return mId; }
 }
