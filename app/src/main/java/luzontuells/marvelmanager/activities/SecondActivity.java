@@ -1,10 +1,14 @@
 package luzontuells.marvelmanager.activities;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -30,7 +34,9 @@ import luzontuells.marvelmanager.fragments.ComicsFragment;
 import luzontuells.marvelmanager.fragments.EventosFragment;
 
 
-public class SecondActivity extends AppCompatActivity {
+public class SecondActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private String urlDetalle, urlWiki, urlComics;
 
     private static final String TAG_SECOND_ACTIVITY = SecondActivity.class.getSimpleName();
     private static final String JSON_URL = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100";
@@ -39,7 +45,7 @@ public class SecondActivity extends AppCompatActivity {
     private String jsonUrlCharacters, jsonUrlComics, jsonUrlEvents, mNombre, mDescripcion;
     private int numComics = 0;
     private int numEventos = 0;
-    private String imageString;
+    private String imageString, id;
 
     private ArrayList<Item> mListArray = new ArrayList<>();
     private ArrayList<Item> mListArrayComic = new ArrayList<>();
@@ -57,15 +63,15 @@ public class SecondActivity extends AppCompatActivity {
 
 
         Bundle bundle = getIntent().getExtras();
-        String id = "";
+        this.id = "";
         if (bundle != null) {
             id = bundle.getString("char_id");
             Log.e("HOLA", id);
         }
 
-        this.jsonUrlCharacters = "http://gateway.marvel.com:80/v1/public/characters/" + id + "?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
-        this.jsonUrlComics = "http://gateway.marvel.com:80/v1/public/characters/" + id + "/comics?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
-        this.jsonUrlEvents = "http://gateway.marvel.com:80/v1/public/characters/" + id + "/events?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
+        this.jsonUrlCharacters = "http://gateway.marvel.com:80/v1/public/characters/" + this.id + "?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
+        this.jsonUrlComics = "http://gateway.marvel.com:80/v1/public/characters/" + this.id + "/comics?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
+        this.jsonUrlEvents = "http://gateway.marvel.com:80/v1/public/characters/" + this.id + "/events?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
 
         setupDataFromJson(this.jsonUrlCharacters);
         setupDataFromJson(this.jsonUrlComics);
@@ -82,6 +88,15 @@ public class SecondActivity extends AppCompatActivity {
                 .load(imageString)
                 .into(Icon);
 
+        Button Detalle = (Button) findViewById(R.id.second_activity_button_detalle);
+        Detalle.setOnClickListener(this);
+
+        Button Wiki = (Button) findViewById(R.id.second_activity_button_wiki);
+        Detalle.setOnClickListener(this);
+
+        Button Comics = (Button) findViewById(R.id.second_activity_button_comics);
+        Detalle.setOnClickListener(this);
+
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
 
@@ -97,9 +112,36 @@ public class SecondActivity extends AppCompatActivity {
         //TODO: If Fragments not used: atomize
         Fragment fragmentComics = new ComicsFragment();
         Fragment fragmentEventos = new EventosFragment();
+
+        Bundle bundleComics = new Bundle();
+        bundleComics.putString("char_id", this.id);
+        fragmentComics.setArguments(bundleComics);
+        Bundle bundleEventos = new Bundle();
+        bundleEventos.putString("char_id", this.id);
+        fragmentEventos.setArguments(bundleEventos);
+
         adapter.addFragment(fragmentComics, comics);
         adapter.addFragment(fragmentEventos, eventos);
+
         viewPager.setAdapter(adapter);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.second_activity_button_detalle:
+                Intent browserDetalle = new Intent(Intent.ACTION_VIEW, Uri.parse(this.urlDetalle));
+                startActivity(browserDetalle);
+                break;
+            case R.id.second_activity_button_wiki:
+                Intent browserWiki = new Intent(Intent.ACTION_VIEW, Uri.parse(this.urlWiki));
+                startActivity(browserWiki);
+                break;
+            case R.id.second_activity_button_comics:
+                Intent browserComics = new Intent(Intent.ACTION_VIEW, Uri.parse(this.urlComics));
+                startActivity(browserComics);
+                break;
+        }
     }
 
 
@@ -147,6 +189,10 @@ public class SecondActivity extends AppCompatActivity {
                 JSONObject data = json.getJSONObject("data");
                 JSONArray results = data.getJSONArray("results");
                 JSONObject fields = results.getJSONObject(0);
+
+                this.urlDetalle = fields.getJSONArray("urls").getJSONObject(0).getString("url");
+                this.urlWiki = fields.getJSONArray("urls").getJSONObject(1).getString("url");
+                this.urlComics = fields.getJSONArray("urls").getJSONObject(2).getString("url");
 
 
                 this.mNombre = fields.getString("name");
@@ -208,16 +254,6 @@ public class SecondActivity extends AppCompatActivity {
             e.printStackTrace();
         } catch (ExecutionException e) {
             e.printStackTrace();
-        }
-    }
-
-    private void fromItemToStringArray(ArrayList<Item> arrayListItem){
-        for (int idx=0; idx < arrayListItem.size(); idx++){
-            this.mImageArray.add(arrayListItem.get(idx).getmImage());
-            this.mNameArray.add(arrayListItem.get(idx).getmImage());
-            this.mDescriptionArray.add(arrayListItem.get(idx).getmImage());
-            this.mIdArray.add(arrayListItem.get(idx).getmImage());
-
         }
     }
 }

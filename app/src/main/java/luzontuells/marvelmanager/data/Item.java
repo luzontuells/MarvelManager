@@ -29,5 +29,7 @@ public class Item {
         return mBody;
     }
 
-    public String getmId() { return mId; }
+    public String getmId() {
+        return mId;
+    }
 }

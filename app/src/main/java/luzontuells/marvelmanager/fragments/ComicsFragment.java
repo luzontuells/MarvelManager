@@ -1,13 +1,20 @@
 package luzontuells.marvelmanager.fragments;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.res.Resources;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -23,23 +30,44 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import luzontuells.marvelmanager.R;
-import luzontuells.marvelmanager.activities.FirstActivity;
+import luzontuells.marvelmanager.activities.SecondActivity;
 import luzontuells.marvelmanager.data.Item;
+import luzontuells.marvelmanager.data.JSONManager;
 
 
-public class ComicsFragment extends Fragment {
+public class ComicsFragment extends Fragment implements AdapterView.OnItemClickListener {
 
+    private String jsonUrlComics,id;
     private ArrayList<Item> mListArrayComic = new ArrayList<>();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
         ListView listView = (ListView) inflater.inflate(
                 R.layout.list_view, container, false);
+
+        this.id = getArguments().getString("char_id");
+
+        this.jsonUrlComics = "http://gateway.marvel.com:80/v1/public/characters/" + id + "/comics?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
+
+
+
+        setupDataFromJson(this.jsonUrlComics);
+
+
+        listView.setOnItemClickListener(this);
         listView.setAdapter(new MyListAdapter(this.getContext(), 0, this.mListArrayComic));
+
+
         return listView;
     }
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+
 
     private class MyListAdapter extends ArrayAdapter<Item> {
         // Creating a ViewHolder to speed up the performance
@@ -93,5 +121,51 @@ public class ComicsFragment extends Fragment {
             return convertView;
         }
     }
+
+
+
+
+
+    public void setupDataFromJson(String jsonUrl) {
+        JSONObject json;
+        try {
+            json = new JSONManager.JSONObtainThread().execute(jsonUrl).get();
+//            JSONObject data = json.getJSONObject("data");
+
+            if (jsonUrl == this.jsonUrlComics) {
+
+                JSONObject data = json.getJSONObject("data");
+                JSONArray results = data.getJSONArray("results");
+
+
+                for (int i = 0; i < results.length(); i++) {
+
+                    JSONObject fields = results.getJSONObject(i);
+
+                    String imageString = fields.getJSONObject("thumbnail").getString("path") + "." + fields.getJSONObject("thumbnail").getString("extension");
+                    String nameString = fields.getString("name");
+                    String descriptionString = fields.getString("description");
+                    String idString = fields.getString("id");
+
+
+                    this.mListArrayComic.add(new Item(imageString,
+                            nameString,
+                            descriptionString,
+                            idString));
+
+                }
+
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
 }

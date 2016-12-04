@@ -15,9 +15,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 
-/**
- * Created by ki100 on 04/12/2016.
- */
 
 public class JSONManager {
 
