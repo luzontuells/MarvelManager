@@ -42,6 +42,7 @@ import java.util.concurrent.ExecutionException;
 
 import luzontuells.marvelmanager.R;
 import luzontuells.marvelmanager.data.Item;
+import luzontuells.marvelmanager.data.JSONManager;
 
 
 public class FirstActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
@@ -53,19 +54,21 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
     private ArrayList<String> mCharId = new ArrayList<>();
     private ArrayList<String> mNames = new ArrayList<>();
     private ArrayList<String> array_sort = new ArrayList<>();
+    private ArrayList<Item> mListArray = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
 
-        final ListView listView = (ListView) this.findViewById(R.id.list_view_first);
-        listView.setOnItemClickListener(this);
+
 
 //        final RecyclerView mRecyclerView = (RecyclerView) this.findViewById(R.id.list_recycler_view);
 
 
         final EditText searchEditText = (EditText) findViewById(R.id.name_edit_text);
+
+        //TODO: Arreglar
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -114,56 +117,16 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
             }
         });
 
-        JSONObject json;
-//        Bitmap bmp;
-        try {
-            json = new JSONObtainThread().execute(JSON_URL).get();
-            if (json == null)
-                Log.e(FirstActivity.TAG_FIRST_ACTIVITY, "Not read");
-            JSONObject data = json.getJSONObject("data");
-            JSONArray results = data.getJSONArray("results");
+        setupDataFromJson(JSON_URL);
 
-            ArrayList<Item> mListArray = new ArrayList<>();
-
-            for (int i = 0; i < results.length(); i++) {
-                JSONObject fields = results.getJSONObject(i);
-
-//                bmp = new ImageObtainThread().execute(fields.getJSONObject("thumbnail").getString("path")
-//                        + "." + fields.getJSONObject("thumbnail").getString("extension")).get();
-
-                String imageString = fields.getJSONObject("thumbnail").getString("path")+ "." + fields.getJSONObject("thumbnail").getString("extension");
-
-                String nameString = fields.getString("name");
-                this.mNames.add(nameString);
-
-                String idString = fields.getString("id");
-                this.mCharId.add(idString);
-
-
-
-                mListArray.add(new Item(imageString,
-                        nameString,
-                        fields.getString("description"),
-                        idString));
-
-            }
-            listView.setAdapter(new MyListAdapter(this, 0, mListArray));
-//            mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-//            mRecyclerView.setAdapter(new MyListAdapterRecycler(this,mListArray));
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        final ListView listView = (ListView) this.findViewById(R.id.list_view_first);
+        listView.setOnItemClickListener(this);
+        listView.setAdapter(new MyListAdapter(this, 0, this.mListArray));
     }
 
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-        //TODO: Arreglar lo del Click
         Intent mIntent = new Intent(this, SecondActivity.class);
         Bundle bundle = new Bundle();
         Log.e(FirstActivity.TAG_FIRST_ACTIVITY, "Position " + Integer.toString(position));
@@ -177,10 +140,6 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
 //    public void onClick(View view) {
 //
 //    }
-
-
-
-
 
 
     private class MyListAdapter extends ArrayAdapter<Item> {
@@ -235,8 +194,6 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
             return convertView;
         }
     }
-
-
 
 
 //
@@ -314,72 +271,49 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
 //
 //
 
+    public void setupDataFromJson(String jsonUrl) {
+
+        JSONObject json;
+//        Bitmap bmp;
+        try {
+            json = new JSONManager.JSONObtainThread().execute(jsonUrl).get();
+            if (json == null)
+                Log.e(FirstActivity.TAG_FIRST_ACTIVITY, "Not read");
+            JSONObject data = json.getJSONObject("data");
+            JSONArray results = data.getJSONArray("results");
 
 
+            for (int i = 0; i < results.length(); i++) {
+                JSONObject fields = results.getJSONObject(i);
 
+                String imageString = fields.getJSONObject("thumbnail").getString("path") + "." + fields.getJSONObject("thumbnail").getString("extension");
 
+                String nameString = fields.getString("name");
+                this.mNames.add(nameString);
 
+                String idString = fields.getString("id");
+                this.mCharId.add(idString);
 
-    private class JSONObtainThread extends AsyncTask<String, Void, JSONObject> {
+                this.mListArray.add(new Item(imageString,
+                        nameString,
+                        fields.getString("description"),
+                        idString));
 
-        @Override
-        protected JSONObject doInBackground(String[] params) {
-            try {
-                URL myUrl = new URL(params[0]);
-                HttpURLConnection myConnection = (HttpURLConnection) myUrl.openConnection();
-                myConnection.setRequestMethod("GET");
-                myConnection.setDoInput(true);
-
-                myConnection.connect();
-
-                int respCode = myConnection.getResponseCode();
-
-                if (respCode == HttpURLConnection.HTTP_OK)
-//                    Log.e(FirstActivity.TAG_FIRST_ACTIVITY, "HTTP_OK");
-                {
-                    JSONObject json = JSONReader.readJsonFromUrl(JSON_URL);
-                    return json;
-                }
-            } catch (MalformedURLException e1) {
-                e1.printStackTrace();
-            } catch (IOException e2) {
-                e2.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
 
-            return null;
-        }
+//            mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+//            mRecyclerView.setAdapter(new MyListAdapterRecycler(this,mListArray));
 
-        @Override
-        protected void onPostExecute(JSONObject json) {
-            super.onPostExecute(json);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
     }
 
 
 
-    public static class JSONReader {
 
-        private static String readAll(Reader rd) throws IOException {
-            StringBuilder sb = new StringBuilder();
-            int cp;
-            while ((cp = rd.read()) != -1) {
-                sb.append((char) cp);
-            }
-            return sb.toString();
-        }
-
-        public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-            InputStream is = new URL(url).openStream();
-            try {
-                BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-                String jsonText = readAll(rd);
-                JSONObject json = new JSONObject(jsonText);
-                return json;
-            } finally {
-                is.close();
-            }
-        }
-    }
 }

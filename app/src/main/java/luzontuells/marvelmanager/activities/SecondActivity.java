@@ -1,35 +1,33 @@
 package luzontuells.marvelmanager.activities;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
-import android.provider.ContactsContract;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.ViewPager;
+
+
+import com.squareup.picasso.Picasso;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 import luzontuells.marvelmanager.R;
 import luzontuells.marvelmanager.data.Item;
+import luzontuells.marvelmanager.data.JSONManager;
+import luzontuells.marvelmanager.fragments.ComicsFragment;
+import luzontuells.marvelmanager.fragments.EventosFragment;
 
 
 public class SecondActivity extends AppCompatActivity {
@@ -37,8 +35,20 @@ public class SecondActivity extends AppCompatActivity {
     private static final String TAG_SECOND_ACTIVITY = SecondActivity.class.getSimpleName();
     private static final String JSON_URL = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100";
 
-    private String jsonUrl, mNombre, mDescripcion;
-    private Bitmap bmp;
+
+    private String jsonUrlCharacters, jsonUrlComics, jsonUrlEvents, mNombre, mDescripcion;
+    private int numComics = 0;
+    private int numEventos = 0;
+    private String imageString;
+
+    private ArrayList<Item> mListArray = new ArrayList<>();
+    private ArrayList<Item> mListArrayComic = new ArrayList<>();
+    private ArrayList<Item> mListArrayEvent = new ArrayList<>();
+
+    private ArrayList mImageArray = new ArrayList<>();
+    private ArrayList mNameArray = new ArrayList<>();
+    private ArrayList mDescriptionArray = new ArrayList<>();
+    private ArrayList mIdArray = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,31 +63,13 @@ public class SecondActivity extends AppCompatActivity {
             Log.e("HOLA", id);
         }
 
-        this.jsonUrl = "http://gateway.marvel.com:80/v1/public/characters/" + id + "?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
+        this.jsonUrlCharacters = "http://gateway.marvel.com:80/v1/public/characters/" + id + "?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
+        this.jsonUrlComics = "http://gateway.marvel.com:80/v1/public/characters/" + id + "/comics?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
+        this.jsonUrlEvents = "http://gateway.marvel.com:80/v1/public/characters/" + id + "/events?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
 
-        JSONObject json;
-        try {
-            json = new JSONObtainThread().execute(this.jsonUrl).get();
-//            JSONObject data = json.getJSONObject("data");
-            if (json == null)
-                Log.e(SecondActivity.TAG_SECOND_ACTIVITY, "ERROR");
-            JSONObject data = json.getJSONObject("data");
-            JSONArray results = data.getJSONArray("results");
-            JSONObject fields = results.getJSONObject(0);
-
-            this.mNombre = fields.getString("name");
-            this.mDescripcion = fields.getString("description");
-
-            this.bmp = new ImageObtainThread().execute(fields.getJSONObject("thumbnail").getString("path")
-                    + "." + fields.getJSONObject("thumbnail").getString("extension")).get();
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        setupDataFromJson(this.jsonUrlCharacters);
+        setupDataFromJson(this.jsonUrlComics);
+        setupDataFromJson(this.jsonUrlEvents);
 
         TextView Nombre = (TextView) findViewById(R.id.second_activity_item_name);
         Nombre.setText(this.mNombre);
@@ -86,126 +78,146 @@ public class SecondActivity extends AppCompatActivity {
         Descripcion.setText(this.mDescripcion);
 
         ImageView Icon = (ImageView) findViewById(R.id.second_activity_icon_item);
-        Icon.setImageBitmap(this.bmp);
+        Picasso.with(this)
+                .load(imageString)
+                .into(Icon);
 
-        //TODO: Add Number of COMICS and EVENTOS before inflating the tabs
+        ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
+        setupViewPager(viewPager);
+
         TabLayout tabs = (TabLayout) findViewById(R.id.second_activity_recursos_tabs);
+        tabs.setupWithViewPager(viewPager);
 
-        int numComics = 0;
-        int numEventos = 0;
+    }
 
+    private void setupViewPager(ViewPager viewPager) {
+        Adapter adapter = new Adapter(getSupportFragmentManager());
         String comics = "(" + String.valueOf(numComics) + ") Comics";
         String eventos = "(" + String.valueOf(numEventos) + ") Eventos";
-
-        tabs.addTab(tabs.newTab().setText(comics));
-        tabs.addTab(tabs.newTab().setText(eventos));
+        //TODO: If Fragments not used: atomize
+        Fragment fragmentComics = new ComicsFragment();
+        Fragment fragmentEventos = new EventosFragment();
+        adapter.addFragment(fragmentComics, comics);
+        adapter.addFragment(fragmentEventos, eventos);
+        viewPager.setAdapter(adapter);
     }
 
 
-    private class JSONObtainThread extends AsyncTask<String, Void, JSONObject> {
+    static class Adapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public Adapter(FragmentManager manager) {
+            super(manager);
+        }
 
         @Override
-        protected JSONObject doInBackground(String[] params) {
-            try {
-                URL myUrl = new URL(params[0]);
-                HttpURLConnection myConnection = (HttpURLConnection) myUrl.openConnection();
-                myConnection.setRequestMethod("GET");
-                myConnection.setDoInput(true);
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
 
-                myConnection.connect();
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
 
-                int respCode = myConnection.getResponseCode();
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
 
-                if (respCode == HttpURLConnection.HTTP_OK)
-//                    Log.e(FirstActivity.TAG_FIRST_ACTIVITY, "HTTP_OK");
-                {
-                    JSONObject json = JSONReader.readJsonFromUrl(params[0]);
-                    return json;
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+
+    }
+
+
+    public void setupDataFromJson(String jsonUrl) {
+        JSONObject json;
+        try {
+            json = new JSONManager.JSONObtainThread().execute(jsonUrl).get();
+//            JSONObject data = json.getJSONObject("data");
+            if (json == null)
+                Log.e(SecondActivity.TAG_SECOND_ACTIVITY, "ERROR");
+
+            if (jsonUrl == this.jsonUrlCharacters) {
+
+                JSONObject data = json.getJSONObject("data");
+                JSONArray results = data.getJSONArray("results");
+                JSONObject fields = results.getJSONObject(0);
+
+
+                this.mNombre = fields.getString("name");
+                this.mDescripcion = fields.getString("description");
+                this.imageString = fields.getJSONObject("thumbnail").getString("path") + "." + fields.getJSONObject("thumbnail").getString("extension");
+
+            } else if (jsonUrl == this.jsonUrlComics) {
+
+                JSONObject data = json.getJSONObject("data");
+                JSONArray results = data.getJSONArray("results");
+
+                this.numComics = data.getInt("total");
+
+
+                for (int i = 0; i < results.length(); i++) {
+
+                    JSONObject fields = results.getJSONObject(i);
+
+                    String imageString = fields.getJSONObject("thumbnail").getString("path") + "." + fields.getJSONObject("thumbnail").getString("extension");
+                    String nameString = fields.getString("name");
+                    String descriptionString = fields.getString("description");
+                    String idString = fields.getString("id");
+
+
+                    this.mListArrayComic.add(new Item(imageString,
+                            nameString,
+                            descriptionString,
+                            idString));
+
                 }
-            } catch (MalformedURLException e1) {
-                e1.printStackTrace();
-            } catch (IOException e2) {
-                e2.printStackTrace();
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 
-            return null;
-        }
+            } else if (jsonUrl == this.jsonUrlEvents) {
 
-        @Override
-        protected void onPostExecute(JSONObject json) {
-            super.onPostExecute(json);
-        }
-    }
+                JSONObject data = json.getJSONObject("data");
+                JSONArray results = data.getJSONArray("results");
+
+                this.numEventos = data.getInt("total");
 
 
-    private class ImageObtainThread extends AsyncTask<String, Void, Bitmap> {
+                for (int i = 0; i < results.length(); i++) {
 
-        @Override
-        protected Bitmap doInBackground(String[] params) {
-            try {
-                URL myUrl = new URL(params[0]);
-                HttpURLConnection myConnection = (HttpURLConnection) myUrl.openConnection();
-                myConnection.setRequestMethod("GET");
-                myConnection.setDoInput(true);
+                    JSONObject fields = results.getJSONObject(i);
 
-                myConnection.connect();
+                    String imageString = fields.getJSONObject("thumbnail").getString("path") + "." + fields.getJSONObject("thumbnail").getString("extension");
+                    String nameString = fields.getString("name");
+                    String descriptionString = fields.getString("description");
+                    String idString = fields.getString("id");
 
-                int respCode = myConnection.getResponseCode();
+                    this.mListArrayEvent.add(new Item(imageString,
+                            nameString,
+                            descriptionString,
+                            idString));
 
-                if (respCode == HttpURLConnection.HTTP_OK) {
-                    InputStream myInStream = myConnection.getInputStream();   // Throws 'IOException'
-
-                    Bitmap myBitmap = BitmapFactory.decodeStream(myInStream);
-
-                    myInStream.close();   // Always close the 'InputStream'
-
-                    if (myBitmap == null)
-                        Log.e(SecondActivity.TAG_SECOND_ACTIVITY, "No images in Thread");
-
-                    return myBitmap;
                 }
-            } catch (MalformedURLException e1) {
-                e1.printStackTrace();
-            } catch (IOException e2) {
-                e2.printStackTrace();
             }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Bitmap bitmap) {
-            super.onPostExecute(bitmap);
-//            if (bitmap != null)
-//                mImageView.setImageBitmap(bitmap);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
     }
 
+    private void fromItemToStringArray(ArrayList<Item> arrayListItem){
+        for (int idx=0; idx < arrayListItem.size(); idx++){
+            this.mImageArray.add(arrayListItem.get(idx).getmImage());
+            this.mNameArray.add(arrayListItem.get(idx).getmImage());
+            this.mDescriptionArray.add(arrayListItem.get(idx).getmImage());
+            this.mIdArray.add(arrayListItem.get(idx).getmImage());
 
-    public static class JSONReader {
-
-        private static String readAll(Reader rd) throws IOException {
-            StringBuilder sb = new StringBuilder();
-            int cp;
-            while ((cp = rd.read()) != -1) {
-                sb.append((char) cp);
-            }
-            return sb.toString();
-        }
-
-        public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-            InputStream is = new URL(url).openStream();
-            try {
-                BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-                String jsonText = readAll(rd);
-                JSONObject json = new JSONObject(jsonText);
-                return json;
-            } finally {
-                is.close();
-            }
         }
     }
-
 }
