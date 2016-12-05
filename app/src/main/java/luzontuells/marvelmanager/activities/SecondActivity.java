@@ -40,17 +40,14 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
     private String urlDetalle, urlWiki, urlComics;
 
     private static final String TAG_SECOND_ACTIVITY = SecondActivity.class.getSimpleName();
-    private static final String JSON_URL = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100";
 
     private String jsonUrlCharacters, jsonUrlComics, jsonUrlEvents, mNombre, mDescripcion;
     private int numComics = 0;
     private int numEventos = 0;
     private String imageString, id;
 
-    private ArrayList<Item> mListArray = new ArrayList<>();
     private ArrayList<Item> mListArrayComic = new ArrayList<>();
     private ArrayList<Item> mListArrayEvent = new ArrayList<>();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,7 +140,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                 break;
 
             case R.id.second_activity_button_wiki:
-                Uri uriWiki = Uri.parse(this.urlDetalle);
+                Uri uriWiki = Uri.parse(this.urlWiki);
                 if (uriWiki != null) {
                     Intent browserWiki = new Intent(Intent.ACTION_VIEW, uriWiki);
                     startActivity(browserWiki);
@@ -153,7 +150,7 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
                 break;
 
             case R.id.second_activity_button_comics:
-                Uri uriComic = Uri.parse(this.urlDetalle);
+                Uri uriComic = Uri.parse(this.urlComics);
                 if (uriComic != null) {
                     Intent browserComics = new Intent(Intent.ACTION_VIEW, uriComic);
                     startActivity(browserComics);

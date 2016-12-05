@@ -1,16 +1,8 @@
 package luzontuells.marvelmanager.fragments;
 
 import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.content.res.TypedArray;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,23 +10,16 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import luzontuells.marvelmanager.R;
 import luzontuells.marvelmanager.activities.SecondActivity;
 import luzontuells.marvelmanager.data.Item;
-import luzontuells.marvelmanager.data.JSONManager;
 
 
 public class ComicsFragment extends Fragment implements AdapterView.OnItemClickListener {
@@ -46,10 +31,7 @@ public class ComicsFragment extends Fragment implements AdapterView.OnItemClickL
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_comics,container,false);
-
-//        ListView listView = (ListView) inflater.inflate(
-//                R.layout.list_view, container, false);
+        FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_comics, container, false);
 
         this.mListArrayComic = ((SecondActivity) getActivity()).getmListArrayComic();
 
@@ -67,7 +49,7 @@ public class ComicsFragment extends Fragment implements AdapterView.OnItemClickL
 
 
     private class MyListAdapter extends ArrayAdapter<Item> {
-        // Creating a ViewHolder to speed up the performance
+
         private class ViewHolder {
             public ImageView icon_ImgView;
             public TextView title_TxtView;

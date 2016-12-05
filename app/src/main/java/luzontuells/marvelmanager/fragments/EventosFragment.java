@@ -3,7 +3,6 @@ package luzontuells.marvelmanager.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,22 +14,18 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
 
 import luzontuells.marvelmanager.R;
 import luzontuells.marvelmanager.activities.SecondActivity;
 import luzontuells.marvelmanager.data.Item;
-import luzontuells.marvelmanager.data.JSONManager;
 
 
 public class EventosFragment extends Fragment implements AdapterView.OnItemClickListener {
 
+    private String jsonUrlEventos, id;
     private ArrayList<Item> mListArrayEventos = new ArrayList<>();
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,16 +33,18 @@ public class EventosFragment extends Fragment implements AdapterView.OnItemClick
         ListView listView = (ListView) inflater.inflate(
                 R.layout.list_view, container, false);
 
+        this.id = getArguments().getString("char_id");
+
+        this.jsonUrlEventos = "http://gateway.marvel.com:80/v1/public/characters/" + id + "/events?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
 
         this.mListArrayEventos = ((SecondActivity) getActivity()).getmListArrayEvent();
-
 
         listView.setOnItemClickListener(this);
         listView.setAdapter(new MyListAdapter(this.getContext(), 0, this.mListArrayEventos));
 
-
         return listView;
     }
+
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -99,50 +96,4 @@ public class EventosFragment extends Fragment implements AdapterView.OnItemClick
             return convertView;
         }
     }
-
-
-
-
-/*
-    public void setupDataFromJson(String jsonUrl) {
-        JSONObject json;
-        try {
-            json = new JSONManager.JSONObtainThread().execute(jsonUrl).get();
-//            JSONObject data = json.getJSONObject("data");
-
-            if (jsonUrl == this.jsonUrlEventos) {
-
-                JSONObject data = json.getJSONObject("data");
-                JSONArray results = data.getJSONArray("results");
-
-
-                for (int i = 0; i < results.length(); i++) {
-
-                    JSONObject fields = results.getJSONObject(i);
-
-                    String imageString = fields.getJSONObject("thumbnail").getString("path") + "." + fields.getJSONObject("thumbnail").getString("extension");
-                    String nameString = fields.getString("name");
-                    String descriptionString = fields.getString("description");
-                    String idString = fields.getString("id");
-
-
-                    this.mListArrayEventos.add(new Item(imageString,
-                            nameString,
-                            descriptionString,
-                            idString));
-
-                }
-
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-*/
-
-
 }

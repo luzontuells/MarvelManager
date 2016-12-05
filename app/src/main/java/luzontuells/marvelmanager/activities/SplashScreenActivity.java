@@ -2,10 +2,12 @@ package luzontuells.marvelmanager.activities;
 
 import java.util.Timer;
 import java.util.TimerTask;
+
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+
 import luzontuells.marvelmanager.R;
 
 
