@@ -2,13 +2,8 @@ package luzontuells.marvelmanager.activities;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -28,15 +23,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
@@ -50,25 +36,32 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
 
     private static final String TAG_FIRST_ACTIVITY = FirstActivity.class.getSimpleName();
     private static final String JSON_URL = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
+    private static final int MIN_LETTERS_TO_TEXT_SEARCH = 3;
 
     private ArrayList<String> mCharId = new ArrayList<>();
+    private ArrayList<String> mUpdatedCharId = new ArrayList<>();
     private ArrayList<String> mNames = new ArrayList<>();
-    private ArrayList<String> array_sort = new ArrayList<>();
+    private ArrayList<Item> array_sort = new ArrayList<>();
     private ArrayList<Item> mListArray = new ArrayList<>();
+    private ListView listView;
+    private EditText searchEditText;
+    private String mJsonUrl = JSON_URL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first);
 
+        this.listView = (ListView) this.findViewById(R.id.list_view_first);
 
+        this.mUpdatedCharId = this.mCharId;
 
-//        final RecyclerView mRecyclerView = (RecyclerView) this.findViewById(R.id.list_recycler_view);
+        setupDataFromJson(JSON_URL);
 
+        this.listView.setOnItemClickListener(this);
+        this.listView.setAdapter(new MyListAdapter(this, 0, this.mListArray));
 
-        final EditText searchEditText = (EditText) findViewById(R.id.name_edit_text);
-
-        //TODO: Arreglar
+        this.searchEditText = (EditText) this.findViewById(R.id.name_edit_text);
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -78,50 +71,41 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
-                //TODO: ARREGLAR!
-                /*
+
                 int textlength = searchEditText.getText().length();
                 array_sort.clear();
-                for (String element: mNames)
-                {
-                    if (textlength <= element.length())
-                    {
+                mUpdatedCharId.clear();
+                for (Item element : mListArray) {
+
+                    if (textlength <= element.getmName().length() && textlength >= MIN_LETTERS_TO_TEXT_SEARCH) {
+                        mJsonUrl = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&nameStartsWith="
+                                + searchEditText.getText().toString();
                         if (searchEditText.getText().toString().equalsIgnoreCase(
-                                (String)
-                                        element.subSequence(0,
-                                                textlength)))
-                        {
+                                (String) element.getmName().subSequence(0,
+                                        textlength))) {
                             array_sort.add(element);
+                            mUpdatedCharId.add(element.getmId());
                         }
                     }
                 }
-//                lv.setAdapter(new ArrayAdapter<String>
-//                        (MainActivity.this,
-//                                android.R.layout.simple_list_item_1, array_sort));
-                ArrayList<Item> mListArray = new ArrayList<>();
-                mListArray.add(new Item(bmp,
-                        nameString,
-                        fields.getString("description"),
-                        idString));
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-                mRecyclerView.setAdapter(new MyListAdapterRecycler(this,array_sort));
-                */
+                if (array_sort != null) {
+                    setupDataFromJson(mJsonUrl);
+                    listView.setAdapter(new MyListAdapter(FirstActivity.this, 0, array_sort));
+                }
+                if (textlength == 0) {
+                    setupDataFromJson(JSON_URL);
+                    listView.setAdapter(new MyListAdapter(FirstActivity.this, 0, mListArray));
+                    mUpdatedCharId = mCharId;
+                }
             }
 
             @Override
             public void afterTextChanged(Editable editable) {
                 if (editable.length() == 0) {
-                    //TODO: Busqueda
 
                 }
             }
         });
-
-        setupDataFromJson(JSON_URL);
-
-        final ListView listView = (ListView) this.findViewById(R.id.list_view_first);
-        listView.setOnItemClickListener(this);
-        listView.setAdapter(new MyListAdapter(this, 0, this.mListArray));
     }
 
 
@@ -129,21 +113,15 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
         Intent mIntent = new Intent(this, SecondActivity.class);
         Bundle bundle = new Bundle();
-        Log.e(FirstActivity.TAG_FIRST_ACTIVITY, "Position " + Integer.toString(position));
-        bundle.putString("char_id", this.mCharId.get(position));
+        bundle.putString("char_id", this.mUpdatedCharId.get(position));
         mIntent.putExtras(bundle);
+//        mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         this.startActivity(mIntent);
         finish();
     }
 
-//    @Override
-//    public void onClick(View view) {
-//
-//    }
-
-
     private class MyListAdapter extends ArrayAdapter<Item> {
-        // Creating a ViewHolder to speed up the performance
+
         private class ViewHolder {
             public ImageView icon_ImgView;
             public TextView title_TxtView;
@@ -162,8 +140,7 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // 'convertView' represents the old view to be reused
-            // It is convenient to check whether it is non-null or of an appropriate type before using it
+
             ViewHolder mViewHolder;
             if (convertView == null) {
                 LayoutInflater mInflater = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -179,17 +156,11 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
             } else
                 mViewHolder = (ViewHolder) convertView.getTag();
 
-            // Once we are sure the 'ViewHolder' object is attach to 'convertView', we can populate the view
-//            mViewHolder.icon_ImgView.setImageResource(this.mContext.getResources().getIdentifier(this.itemList.get(position).getmImage(), "drawable", this.mContext.getPackageName()));
-//            mViewHolder.icon_ImgView.setImageBitmap(this.itemList.get(position).getmImage());
             mViewHolder.title_TxtView.setText(this.itemList.get(position).getmName());
             mViewHolder.body_TxtView.setText(this.itemList.get(position).getmBody());
             Picasso.with(mContext)
                     .load(this.itemList.get(position).getmImage())
                     .into(mViewHolder.icon_ImgView);
-
-            // To check that views are loaded only when they have to be shown
-            //Log.i(MainActivity.TAG_FIRST_ACTIVITY, String.valueOf(this.mContext.getResources().getIdentifier(this.itemList.get(position).getmImage(), "drawable", this.mContext.getPackageName())));
 
             return convertView;
         }
@@ -274,14 +245,11 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
     public void setupDataFromJson(String jsonUrl) {
 
         JSONObject json;
-//        Bitmap bmp;
+
         try {
             json = new JSONManager.JSONObtainThread().execute(jsonUrl).get();
-            if (json == null)
-                Log.e(FirstActivity.TAG_FIRST_ACTIVITY, "Not read");
             JSONObject data = json.getJSONObject("data");
             JSONArray results = data.getJSONArray("results");
-
 
             for (int i = 0; i < results.length(); i++) {
                 JSONObject fields = results.getJSONObject(i);
@@ -298,11 +266,7 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
                         nameString,
                         fields.getString("description"),
                         idString));
-
             }
-
-//            mRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-//            mRecyclerView.setAdapter(new MyListAdapterRecycler(this,mListArray));
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -312,8 +276,6 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
             e.printStackTrace();
         }
     }
-
-
 
 
 }

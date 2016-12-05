@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
+import android.widget.Toast;
 
 
 import com.squareup.picasso.Picasso;
@@ -41,7 +42,6 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
     private static final String TAG_SECOND_ACTIVITY = SecondActivity.class.getSimpleName();
     private static final String JSON_URL = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100";
 
-
     private String jsonUrlCharacters, jsonUrlComics, jsonUrlEvents, mNombre, mDescripcion;
     private int numComics = 0;
     private int numEventos = 0;
@@ -51,10 +51,6 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
     private ArrayList<Item> mListArrayComic = new ArrayList<>();
     private ArrayList<Item> mListArrayEvent = new ArrayList<>();
 
-    private ArrayList mImageArray = new ArrayList<>();
-    private ArrayList mNameArray = new ArrayList<>();
-    private ArrayList mDescriptionArray = new ArrayList<>();
-    private ArrayList mIdArray = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,10 +88,10 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         Detalle.setOnClickListener(this);
 
         Button Wiki = (Button) findViewById(R.id.second_activity_button_wiki);
-        Detalle.setOnClickListener(this);
+        Wiki.setOnClickListener(this);
 
         Button Comics = (Button) findViewById(R.id.second_activity_button_comics);
-        Detalle.setOnClickListener(this);
+        Comics.setOnClickListener(this);
 
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         setupViewPager(viewPager);
@@ -109,18 +105,17 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         Adapter adapter = new Adapter(getSupportFragmentManager());
         String comics = "(" + String.valueOf(numComics) + ") Comics";
         String eventos = "(" + String.valueOf(numEventos) + ") Eventos";
-        //TODO: If Fragments not used: atomize
-        Fragment fragmentComics = new ComicsFragment();
-        Fragment fragmentEventos = new EventosFragment();
 
+        Fragment fragmentComics = new ComicsFragment();
         Bundle bundleComics = new Bundle();
         bundleComics.putString("char_id", this.id);
         fragmentComics.setArguments(bundleComics);
+        adapter.addFragment(fragmentComics, comics);
+
+        Fragment fragmentEventos = new EventosFragment();
         Bundle bundleEventos = new Bundle();
         bundleEventos.putString("char_id", this.id);
         fragmentEventos.setArguments(bundleEventos);
-
-        adapter.addFragment(fragmentComics, comics);
         adapter.addFragment(fragmentEventos, eventos);
 
         viewPager.setAdapter(adapter);
@@ -128,18 +123,35 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.second_activity_button_detalle:
-                Intent browserDetalle = new Intent(Intent.ACTION_VIEW, Uri.parse(this.urlDetalle));
-                startActivity(browserDetalle);
+                Uri uriDet = Uri.parse(this.urlDetalle);
+                if (uriDet != null) {
+                    Intent browserDetalle = new Intent(Intent.ACTION_VIEW, uriDet);
+                    startActivity(browserDetalle);
+                } else {
+                    Toast.makeText(this, "Sorry, URL not available", Toast.LENGTH_SHORT).show();
+                }
                 break;
+
             case R.id.second_activity_button_wiki:
-                Intent browserWiki = new Intent(Intent.ACTION_VIEW, Uri.parse(this.urlWiki));
-                startActivity(browserWiki);
+                Uri uriWiki = Uri.parse(this.urlDetalle);
+                if (uriWiki != null) {
+                    Intent browserWiki = new Intent(Intent.ACTION_VIEW, uriWiki);
+                    startActivity(browserWiki);
+                } else {
+                    Toast.makeText(this, "Sorry, URL not available", Toast.LENGTH_SHORT).show();
+                }
                 break;
+
             case R.id.second_activity_button_comics:
-                Intent browserComics = new Intent(Intent.ACTION_VIEW, Uri.parse(this.urlComics));
-                startActivity(browserComics);
+                Uri uriComic = Uri.parse(this.urlDetalle);
+                if (uriComic != null) {
+                    Intent browserComics = new Intent(Intent.ACTION_VIEW, uriComic);
+                    startActivity(browserComics);
+                } else {
+                    Toast.makeText(this, "Sorry, URL not available", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }

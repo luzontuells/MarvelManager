@@ -15,7 +15,15 @@
         android:layout_height="match_parent"
         android:contentDescription="@string/app_name"
         android:gravity="center"
-        android:text="@string/my_name" />
+        android:text="@string/my_name"
+        android:id="@+id/my_name"/>
+    <ProgressBar
+        android:id="@+id/splash_screen_progress_bar"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginRight="5dp"
+        android:layout_below="@id/my_name"/>
 
 </RelativeLayout>
 
