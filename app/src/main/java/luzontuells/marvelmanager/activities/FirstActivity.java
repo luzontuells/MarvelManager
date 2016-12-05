@@ -6,7 +6,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +15,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.squareup.picasso.Picasso;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
-
 import luzontuells.marvelmanager.R;
 import luzontuells.marvelmanager.data.Item;
 import luzontuells.marvelmanager.data.JSONManager;
@@ -33,8 +28,6 @@ import luzontuells.marvelmanager.data.JSONManager;
 
 public class FirstActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
-
-    private static final String TAG_FIRST_ACTIVITY = FirstActivity.class.getSimpleName();
     private static final String JSON_URL = "http://gateway.marvel.com/v1/public/characters?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
     private static final int MIN_LETTERS_TO_TEXT_SEARCH = 3;
 
@@ -65,12 +58,10 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
         searchEditText.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
             }
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
 
                 int textlength = searchEditText.getText().length();
                 array_sort.clear();
@@ -101,13 +92,9 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
 
             @Override
             public void afterTextChanged(Editable editable) {
-                if (editable.length() == 0) {
-
-                }
             }
         });
     }
-
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
@@ -115,9 +102,8 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
         Bundle bundle = new Bundle();
         bundle.putString("char_id", this.mUpdatedCharId.get(position));
         mIntent.putExtras(bundle);
-//        mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        mIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         this.startActivity(mIntent);
-        finish();
     }
 
     private class MyListAdapter extends ArrayAdapter<Item> {
@@ -146,7 +132,6 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
                 LayoutInflater mInflater = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = mInflater.inflate(R.layout.list_item, null);
 
-                // Configure a 'ViewHolder'
                 mViewHolder = new ViewHolder();
                 mViewHolder.icon_ImgView = (ImageView) convertView.findViewById(R.id.icon_item);
                 mViewHolder.title_TxtView = (TextView) convertView.findViewById(R.id.item_name);
@@ -165,82 +150,6 @@ public class FirstActivity extends AppCompatActivity implements AdapterView.OnIt
             return convertView;
         }
     }
-
-
-//
-//
-//    // This adapter uses the 'RecyclerView.Adapter' for the 'RecyclerView' (which is an optimized 'ListView')
-//    private class MyListAdapterRecycler extends RecyclerView.Adapter<MyListAdapterRecycler.ViewHolder>
-//    {
-//        // Creating a 'ViewHolder' to speed up the performance
-//        public class ViewHolder extends RecyclerView.ViewHolder
-//        {
-//            public ImageView icon_ImgView;
-//            public TextView title_TxtView;
-//            public TextView body_TxtView;
-//
-//            public ViewHolder(View itemView)
-//            {
-//                super(itemView);
-//
-//                this.icon_ImgView = (ImageView) itemView.findViewById(R.id.icon_item);
-//                this.title_TxtView = (TextView) itemView.findViewById(R.id.item_name);
-//                this.body_TxtView = (TextView) itemView.findViewById(R.id.item_body);
-//            }
-//        }
-//
-//        Context mContext;
-//        ArrayList<Item> itemList;
-//
-//        // Provide a suitable constructor (depends on the kind of dataset)
-//        public MyListAdapterRecycler(Context context, ArrayList<Item> objects)
-//        {
-//            this.mContext = context;
-//            this.itemList = objects;
-//        }
-//
-//        // Create new views (invoked by the layout manager)
-//        @Override
-//        public ViewHolder onCreateViewHolder(ViewGroup parent, final int viewType)
-//        {
-//            // create a new view
-//            View viewRow = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-//            viewRow.setOnClickListener(new View.OnClickListener() {
-//                @Override
-//                public void onClick(View v) {
-//                }
-//            });
-//            // set the view's size, margins, paddings and layout parameters
-//            ViewHolder viewRowHolder = new ViewHolder(viewRow);
-//            return viewRowHolder;
-//        }
-//
-//        // Replace the contents of a view (invoked by the layout manager)
-//        @Override
-//        public void onBindViewHolder(ViewHolder holder, int position)
-//        {
-//            // get element from your dataset at this position
-//            // replace the contents of the view with that element
-////            holder.icon_ImgView.setImageBitmap(this.itemList.get(position).getmImage());
-//            holder.title_TxtView.setText(this.itemList.get(position).getmName());
-//            holder.body_TxtView.setText(this.itemList.get(position).getmBody());
-//
-//            Picasso.with(mContext)
-//                    .load(this.itemList.get(position).getmImage())
-//                    .into(holder.icon_ImgView);
-//        }
-//
-//        // Return the size of your dataset (invoked by the layout manager)
-//        @Override
-//        public int getItemCount()
-//        {
-//            return this.itemList.size();
-//        }
-//    }
-//
-//
-//
-//
 
     public void setupDataFromJson(String jsonUrl) {
 

@@ -4,8 +4,11 @@
     android:layout_height="match_parent"
     tools:context="luzontuells.marvelmanager.fragments.ComicsFragment">
 
+
+
     <ListView
         android:id="@+id/list_view_comic"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"></ListView>
+
 </FrameLayout>

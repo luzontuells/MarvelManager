@@ -2,6 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
+    style="@style/AppTheme"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
@@ -25,9 +26,9 @@
         android:hint="nombre a buscar" />
 
     <!--<android.support.v7.widget.RecyclerView-->
-        <!--android:id="@+id/list_recycler_view"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>-->
+    <!--android:id="@+id/list_recycler_view"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="wrap_content"></android.support.v7.widget.RecyclerView>-->
 
     <ListView
         android:id="@+id/list_view_first"

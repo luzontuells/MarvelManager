@@ -10,7 +10,7 @@
         android:id="@+id/icon_item"
         android:layout_width="0dp"
         android:layout_height="60dp"
-        android:layout_weight="0.25"/>
+        android:layout_weight="0.25" />
 
     <RelativeLayout
         android:layout_width="0dp"
@@ -22,87 +22,40 @@
             android:id="@+id/item_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/colorPrimary"/>
+            android:textColor="@color/colorPrimary"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/item_body"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/item_name"
-            android:textColor="@color/colorAccent"/>
+            android:textColor="@color/colorAccent" />
     </RelativeLayout>
 
 </LinearLayout>
 
-<!--<RelativeLayout-->
+    <!--<RelativeLayout-->
 
-<!--xmlns:tools="http://schemas.android.com/tools"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:layout_width="match_parent"-->
-<!--xmlns:android="http://schemas.android.com/apk/res/android">-->
+    <!--xmlns:tools="http://schemas.android.com/tools"--><!--android:layout_height="wrap_content"--><!--android:layout_width="match_parent"--><!--xmlns:android="http://schemas.android.com/apk/res/android">-->
 
-<!--<ImageView-->
-    <!--android:layout_height="60dp"-->
-    <!--android:layout_width="40dp"-->
-    <!--android:scaleType="centerCrop"-->
-    <!--android:id="@+id/icon_item" />-->
+    <!--<ImageView--><!--android:layout_height="60dp"--><!--android:layout_width="40dp"--><!--android:scaleType="centerCrop"--><!--android:id="@+id/icon_item" />-->
 
-<!--<TextView-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:id="@+id/item_name"-->
-    <!--android:textAppearance="?attr/textAppearanceListItem"-->
-    <!--android:layout_toRightOf="@+id/icon_item"/>-->
+    <!--<TextView--><!--android:layout_height="wrap_content"--><!--android:layout_width="match_parent"--><!--android:id="@+id/item_name"--><!--android:textAppearance="?attr/textAppearanceListItem"--><!--android:layout_toRightOf="@+id/icon_item"/>-->
 
-<!--<TextView-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:id="@+id/item_body"-->
-    <!--android:textAppearance="?attr/textAppearanceListItem"-->
-    <!--android:layout_toRightOf="@+id/icon_item"-->
-    <!--android:layout_below="@+id/item_name" />-->
+    <!--<TextView--><!--android:layout_height="wrap_content"--><!--android:layout_width="match_parent"--><!--android:id="@+id/item_body"--><!--android:textAppearance="?attr/textAppearanceListItem"--><!--android:layout_toRightOf="@+id/icon_item"--><!--android:layout_below="@+id/item_name" />-->
 
-<!--</RelativeLayout>-->
+    <!--</RelativeLayout>-->
 
 
+    <!--<?xml version="1.0" encoding="utf-8"?>--><!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"--><!--android:orientation="vertical" android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:paddingLeft="5dp"--><!--android:paddingRight="5dp">-->
 
+    <!--<LinearLayout--><!--android:orientation="horizontal"--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content">-->
 
+    <!--<ImageView--><!--android:layout_width="40dp"--><!--android:layout_height="60dp"--><!--android:id="@+id/imageViewList"--><!--android:src="@mipmap/ic_launcher" />--><!--<TextView--><!--android:layout_width="0dp"--><!--android:layout_height="match_parent"--><!--android:textAppearance="?android:attr/textAppearanceLarge"--><!--android:text="@string/txt_view_title_text"--><!--android:id="@+id/textViewTiltle"--><!--android:layout_weight="1"--><!--android:gravity="center_vertical"--><!--android:layout_marginLeft="10dp" />-->
 
+    <!--</LinearLayout>-->
 
-    <!--<?xml version="1.0" encoding="utf-8"?>-->
-<!--<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"-->
-<!--android:orientation="vertical" android:layout_width="match_parent"-->
-<!--android:layout_height="wrap_content"-->
-<!--android:paddingLeft="5dp"-->
-<!--android:paddingRight="5dp">-->
+    <!--<TextView--><!--android:layout_width="match_parent"--><!--android:layout_height="wrap_content"--><!--android:text="@string/txt_view_body_text"--><!--android:id="@+id/textViewBody"--><!--android:layout_marginLeft="10dp" />-->
 
-<!--<LinearLayout-->
-    <!--android:orientation="horizontal"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content">-->
-
-    <!--<ImageView-->
-        <!--android:layout_width="40dp"-->
-        <!--android:layout_height="60dp"-->
-        <!--android:id="@+id/imageViewList"-->
-        <!--android:src="@mipmap/ic_launcher" />-->
-    <!--<TextView-->
-        <!--android:layout_width="0dp"-->
-        <!--android:layout_height="match_parent"-->
-        <!--android:textAppearance="?android:attr/textAppearanceLarge"-->
-        <!--android:text="@string/txt_view_title_text"-->
-        <!--android:id="@+id/textViewTiltle"-->
-        <!--android:layout_weight="1"-->
-        <!--android:gravity="center_vertical"-->
-        <!--android:layout_marginLeft="10dp" />-->
-
-<!--</LinearLayout>-->
-
-<!--<TextView-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="wrap_content"-->
-    <!--android:text="@string/txt_view_body_text"-->
-    <!--android:id="@+id/textViewBody"-->
-    <!--android:layout_marginLeft="10dp" />-->
-
-<!--</LinearLayout>-->
+    <!--</LinearLayout>-->

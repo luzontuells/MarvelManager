@@ -101,6 +101,14 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
 
     }
 
+    public ArrayList<Item> getmListArrayComic() {
+        return mListArrayComic;
+    }
+
+    public ArrayList<Item> getmListArrayEvent() {
+        return mListArrayEvent;
+    }
+
     private void setupViewPager(ViewPager viewPager) {
         Adapter adapter = new Adapter(getSupportFragmentManager());
         String comics = "(" + String.valueOf(numComics) + ") Comics";
@@ -192,7 +200,6 @@ public class SecondActivity extends AppCompatActivity implements View.OnClickLis
         JSONObject json;
         try {
             json = new JSONManager.JSONObtainThread().execute(jsonUrl).get();
-//            JSONObject data = json.getJSONObject("data");
             if (json == null)
                 Log.e(SecondActivity.TAG_SECOND_ACTIVITY, "ERROR");
 

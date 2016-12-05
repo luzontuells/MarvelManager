@@ -3,6 +3,7 @@ package luzontuells.marvelmanager.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,15 +23,14 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutionException;
 
 import luzontuells.marvelmanager.R;
+import luzontuells.marvelmanager.activities.SecondActivity;
 import luzontuells.marvelmanager.data.Item;
 import luzontuells.marvelmanager.data.JSONManager;
 
 
 public class EventosFragment extends Fragment implements AdapterView.OnItemClickListener {
 
-    private String jsonUrlEventos,id;
     private ArrayList<Item> mListArrayEventos = new ArrayList<>();
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -38,13 +38,8 @@ public class EventosFragment extends Fragment implements AdapterView.OnItemClick
         ListView listView = (ListView) inflater.inflate(
                 R.layout.list_view, container, false);
 
-        this.id = getArguments().getString("char_id");
 
-        this.jsonUrlEventos = "http://gateway.marvel.com:80/v1/public/characters/" + id + "/events?ts=1&apikey=94f4341859283f334a8e1316d7b12e42&hash=aca24562b84ef49172856f5e28d1f95a&limit=100"; //&limit=100
-
-
-
-        setupDataFromJson(this.jsonUrlEventos);
+        this.mListArrayEventos = ((SecondActivity) getActivity()).getmListArrayEvent();
 
 
         listView.setOnItemClickListener(this);
@@ -61,7 +56,7 @@ public class EventosFragment extends Fragment implements AdapterView.OnItemClick
 
 
     private class MyListAdapter extends ArrayAdapter<Item> {
-        // Creating a ViewHolder to speed up the performance
+
         private class ViewHolder {
             public ImageView icon_ImgView;
             public TextView title_TxtView;
@@ -80,14 +75,12 @@ public class EventosFragment extends Fragment implements AdapterView.OnItemClick
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            // 'convertView' represents the old view to be reused
-            // It is convenient to check whether it is non-null or of an appropriate type before using it
+
             ViewHolder mViewHolder;
             if (convertView == null) {
                 LayoutInflater mInflater = (LayoutInflater) this.mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = mInflater.inflate(R.layout.list_item, null);
 
-                // Configure a 'ViewHolder'
                 mViewHolder = new ViewHolder();
                 mViewHolder.icon_ImgView = (ImageView) convertView.findViewById(R.id.icon_item);
                 mViewHolder.title_TxtView = (TextView) convertView.findViewById(R.id.item_name);
@@ -97,17 +90,11 @@ public class EventosFragment extends Fragment implements AdapterView.OnItemClick
             } else
                 mViewHolder = (ViewHolder) convertView.getTag();
 
-            // Once we are sure the 'ViewHolder' object is attach to 'convertView', we can populate the view
-//            mViewHolder.icon_ImgView.setImageResource(this.mContext.getResources().getIdentifier(this.itemList.get(position).getmImage(), "drawable", this.mContext.getPackageName()));
-//            mViewHolder.icon_ImgView.setImageBitmap(this.itemList.get(position).getmImage());
             mViewHolder.title_TxtView.setText(this.itemList.get(position).getmName());
             mViewHolder.body_TxtView.setText(this.itemList.get(position).getmBody());
             Picasso.with(mContext)
                     .load(this.itemList.get(position).getmImage())
                     .into(mViewHolder.icon_ImgView);
-
-            // To check that views are loaded only when they have to be shown
-            //Log.i(MainActivity.TAG_FIRST_ACTIVITY, String.valueOf(this.mContext.getResources().getIdentifier(this.itemList.get(position).getmImage(), "drawable", this.mContext.getPackageName())));
 
             return convertView;
         }
@@ -116,7 +103,7 @@ public class EventosFragment extends Fragment implements AdapterView.OnItemClick
 
 
 
-
+/*
     public void setupDataFromJson(String jsonUrl) {
         JSONObject json;
         try {
@@ -155,8 +142,7 @@ public class EventosFragment extends Fragment implements AdapterView.OnItemClick
             e.printStackTrace();
         }
     }
-
-
+*/
 
 
 }
